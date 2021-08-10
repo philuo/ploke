@@ -1,0 +1,16 @@
+html {
+    font-size: 100px;
+}
+
+@media screen and (max-width: 360px) {
+    html {
+        font-size: 90px;
+    }
+}
+
+body {
+    font-size: 14px;
+    overflow: hidden;
+    padding: 0;
+    margin: 0; 
+}

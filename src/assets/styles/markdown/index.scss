@@ -1,0 +1,80 @@
+@import './theme.scss';
+@import './title.scss';
+@import './table.scss';
+@import './code.scss';
+
+.plog-md {
+    code {
+        display: block;
+        overflow-x: auto;
+        padding: 3px 5px;
+        background: #fff;
+        color: #000;
+    }
+}
+
+.attribute,
+.keyword,
+.literal,
+.name,
+.selector-tag,
+.tag {
+    color: #aa0d91;
+}
+.template-variable,
+.variable {
+    color: #3f6e74;
+}
+.code,
+.meta .string,
+.string {
+    color: #c41a16;
+}
+.link,
+.regexp {
+    color: #0e0eff;
+}
+.bullet,
+.number,
+.symbol,
+.title {
+    color: #1c00cf;
+}
+.meta,
+.section {
+    color: #643820;
+}
+.built_in,
+.class .title,
+.params,
+.title.class_,
+.type {
+    color: #5c2699;
+}
+.attr {
+    color: #836c28;
+}
+.subst {
+    color: #000;
+}
+.formula {
+    background-color: #eee;
+    font-style: italic;
+}
+.addition {
+    background-color: #baeeba;
+}
+.deletion {
+    background-color: #ffc8bd;
+}
+.selector-class,
+.selector-id {
+    color: #9b703f;
+}
+.doctag,
+.strong {
+    font-weight: 700;
+}
+.emphasis {
+    font-style: italic;
+}

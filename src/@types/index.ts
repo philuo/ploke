@@ -1,0 +1,1 @@
+declare type numberic = number | string;

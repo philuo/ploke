@@ -1,0 +1,14 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_REGISTRIES_MISMATCH",
+    "err": {
+      "name": "Error",
+      "message": "This modules directory was created using the following registries configuration: {\"default\":\"https://registry.npm.taobao.org/\"}. The current configuration is {\"default\":\"http://registry.npm.baidu-int.com/\"}. To recreate the modules directory using the new settings, run \"pnpm install\".",
+      "code": "ERR_PNPM_REGISTRIES_MISMATCH",
+      "stack": "Error: This modules directory was created using the following registries configuration: {\"default\":\"https://registry.npm.taobao.org/\"}. The current configuration is {\"default\":\"http://registry.npm.baidu-int.com/\"}. To recreate the modules directory using the new settings, run \"pnpm install\".\n    at validateModules (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:91168:15)\n    at async Object.getContext [as default] (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:91040:28)\n    at async Object.mutateModules (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:113315:19)\n    at async Object.handler [as default] (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:116232:35)\n    at async /usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:125733:20\n    at async run (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:125708:34)\n    at async runPnpm (/usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:125918:5)\n    at async /usr/local/lib/node_modules/pnpm/dist/pnpm.cjs:125910:7"
+    }
+  }
+}
