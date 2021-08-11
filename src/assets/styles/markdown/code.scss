@@ -1,0 +1,99 @@
+.lightmode {
+    .plog-article {
+        code {
+            background: #f8f8f8;
+            color: #1b1b1b;
+            border-left: 0.04rem solid #005282;
+        }
+    }
+}
+
+.plog-article {
+    pre {
+        margin: 0.24rem 0;
+        position: relative;
+
+        &::after {
+            content: attr(lang);
+            position: absolute;
+            top: 0.02rem;
+            right: 0.15rem;
+            color: #a9a9a9;
+        }
+    }
+
+    code {
+        font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+        font-size: .14rem;
+        line-height: 1.36;
+        display: block;
+        overflow-x: auto;
+        padding: 0.15rem 0.1rem;
+    }
+
+    .attribute,
+    .keyword,
+    .literal,
+    .name,
+    .selector-tag,
+    .tag {
+        color: #aa0d91;
+    }
+    .template-variable,
+    .variable {
+        color: #3f6e74;
+    }
+    .code,
+    .meta .string,
+    .string {
+        color: #c41a16;
+    }
+    .link,
+    .regexp {
+        color: #0e0eff;
+    }
+    .bullet,
+    .number,
+    .symbol,
+    .title {
+        color: #1c00cf;
+    }
+    .meta,
+    .section {
+        color: #643820;
+    }
+    .built_in,
+    .class .title,
+    .params,
+    .title.class_,
+    .type {
+        color: #5c2699;
+    }
+    .attr {
+        color: #836c28;
+    }
+    .subst {
+        color: #000;
+    }
+    .formula {
+        background-color: #eee;
+        font-style: italic;
+    }
+    .addition {
+        background-color: #baeeba;
+    }
+    .deletion {
+        background-color: #ffc8bd;
+    }
+    .selector-class,
+    .selector-id {
+        color: #9b703f;
+    }
+    .doctag,
+    .strong {
+        font-weight: 700;
+    }
+    .emphasis {
+        font-style: italic;
+    }
+}

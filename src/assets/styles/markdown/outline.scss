@@ -1,0 +1,23 @@
+.plog-outline {
+    margin-bottom: .24rem;
+    font-weight: 700;
+
+    .head {
+        user-select: none;
+        line-height: .3rem;
+        width: .25rem;
+        padding: .05rem .12rem;
+        font-size: .22rem;
+        text-align: center;
+        background: #e8e8e8;
+        overflow-wrap: break-word;
+        color: #999;
+    }
+
+    .body {
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: .1rem;
+        color: #3d4450;
+    }
+}

@@ -1,7 +1,7 @@
-const { Suite } = require('benchmark');
+import { Suite } from 'benchmark';
 const suite = new Suite();
 
-function racemark_single_thread(cb1: Function, cb2: Function) {
+export function racemark_single_thread(cb1: Function, cb2: Function) {
     suite
         .add(`${cb1.name}`, function () {
             cb1();
@@ -20,54 +20,6 @@ function racemark_single_thread(cb1: Function, cb2: Function) {
         .run({ async: true });
 }
 
-const code = `<template>
-<div :class="$style.container">
-    <h1 :class="$style.name">{{ msg }}</h1>
-</div>
-</template>
-
-<script lang="ts" setup>
-import { ref } from 'vue';
-
-const msg = ref<numberic>('Language');
-</script>
-
-<style lang="scss" module>
-.container {
-.name {
-    color: red;
+export default {
+    racemark_single_thread
 }
-}
-
-:global(.container) {
-color: green;
-}
-</style>
-
-<style scoped>
-.container {
-height: auto;
-}
-</style>`;
-const regStyleModule = /<\s*style.+module(\s|.)*>(\s|.)*<\s*\/style\s*>/g;
-
-console.log(code.split(/^(<style.+module>)|(<\/style>)$/));
-
-
-function whiteSpace() {
-    const arr = code.split(/(<style.+module>)|(<\/style>)/)[0];
-}
-
-racemark_single_thread(
-    () => {
-        code.replace(regStyleModule, '');
-    },
-    () => {
-        whiteSpace();
-    }
-);
-
-
-// export default {
-//     racemark_single_thread
-// }

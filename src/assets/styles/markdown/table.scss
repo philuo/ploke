@@ -1,0 +1,42 @@
+// 亮模式
+.lightmode {
+    .plog-table {
+        code {
+            word-break: break-word;
+            white-space: normal;
+            border-left: none;
+            padding: 0;
+            background: transparent;
+        }
+    }
+}
+
+.plog-article {
+    .plog-table {
+        margin-bottom: .24rem;
+        width: 100%;
+        font-size: 0.144rem;
+        overflow-x: auto;
+        box-sizing: border-box;
+        border: 0.01rem solid #a4a4a4;
+        border-collapse: collapse;
+
+        td,
+        th {
+            padding: 12px;
+            border: 0;
+            border-left: 0.01rem solid #a4a4a4;
+            border-bottom: 0.01rem solid #a4a4a4;
+        }
+
+        td:first-child,
+        th:first-child {
+            border-left: 0;
+            min-width: .8rem;
+        }
+
+        th {
+            background-color: #d5d5d5;
+        }
+    }
+}

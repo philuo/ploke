@@ -8,9 +8,13 @@ declare module '*.vue' {
 declare module 'markdown-it';
 
 declare module '*.md' {
-    const html: string;
-    export const markdown: string;
-    export default html;
+    const markdown: string;
+    export const token: {
+        tag: number;
+        value: string;
+        lang?: string;
+    }[];
+    export default markdown;
 }
 
 /// <reference types="vite/client" />

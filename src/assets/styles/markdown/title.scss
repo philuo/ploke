@@ -1,5 +1,28 @@
-.plog-md {
+.plog-article {
+    font-family: googlesans, Roboto, sans-serif;
+
+    h1,
+    h2 {
+        color: #202124;
+        font-weight: 400;
+    }
+
     h1 {
-        color: red;
+        font-size: .28rem;
+        line-height: .32rem;
+        margin: 0 0 .08rem;
+    }
+
+    h2 {
+        font-size: .24rem;
+    }
+
+    .article-content {
+        color: #3c4043;
+        font-family: Roboto, 'Helvetica Neue', Helvetica, sans-serif;
+
+        // p {
+            
+        // }
     }
 }

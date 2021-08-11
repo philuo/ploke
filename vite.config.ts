@@ -1,16 +1,18 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import markdownImported from './src/plugins/markdown-imported';
+import vueJsx from "@vitejs/plugin-vue-jsx";
+import poke from './src/plugins/poke';
 import { resolve } from 'path';
 
 export default defineConfig({
     resolve: {
         alias: {
+            '~': __dirname,
             '@': resolve(__dirname, 'src'),
-            '@style': resolve(__dirname, 'src/assets/styles')
+            '@styles': resolve(__dirname, 'src/assets/styles')
         }
     },
-    plugins: [vue(), markdownImported({ ssr: true })],
+    plugins: [vue(), vueJsx(), poke({ ssr: true })],
     optimizeDeps: {
         exclude: ['vue']
     },

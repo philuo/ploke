@@ -1,0 +1,12 @@
+.plog-imgblock {
+    margin: .24rem 0;
+    font-size: 0;
+    min-height: .6rem;
+    background-color: #f8f8f8;
+    text-align: center;
+
+    .plog-img {
+        object-fit: fill;
+        width: 100%;
+    }
+}

@@ -9,8 +9,29 @@ html {
 }
 
 body {
+    margin: 0;
     font-size: 14px;
-    overflow: hidden;
-    padding: 0;
-    margin: 0; 
+    letter-spacing: -.0004rem;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeSpeed;
+    overflow-x: hidden;
+}
+
+#app {
+    margin: 0 .08rem;
+    padding: 0 0 .1rem;
+}
+
+@font-face {
+    font-family: googlesans;
+    src: url(https://fonts.gstatic.com/s/googlesans/v16/4UaGrENHsxJlGDuGo1OIlL3Owp5eKQtG.woff2);
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url(https://fonts.gstatic.com/s/roboto/v18/KFOlCnqEu92Fr1MmWUlfABc4AMP6lbBP.woff2);
+    font-weight: normal;
+    font-style: normal;
 }
