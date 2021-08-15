@@ -39,6 +39,7 @@ const textParser = (token: string | PlogToken) => {
     return <>{token.value}</>;
 };
 
+function plaintextParser() {}
 function linkParser() {}
 function boldParser() {}
 function colorParser() {}
@@ -213,8 +214,9 @@ const parser_t = {
     [TEXT_TAG.ITALIC as number]: italicParser,
     [TEXT_TAG.UNDERLINE as number]: underlineParser,
     [TEXT_TAG.DELETELINE as number]: deletelineParser,
-    [TEXT_TAG.INLINECODE as number]: inlinecodeParser,
+    [TEXT_TAG.INLINEREF as number]: inlinecodeParser,
     [TEXT_TAG.LINK as number]: linkParser,
+    [TEXT_TAG.PLAINTEXT as number]: plaintextParser
 };
 
 const render = (tokenList: PlogToken[]) => {

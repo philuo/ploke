@@ -1,4 +1,5 @@
 import highlight from 'highlight.js';
+import { render } from 'vue';
 
 /**
  * 导出高亮方法
@@ -119,10 +120,11 @@ export enum TEXT_TAG {
     ITALIC,
     UNDERLINE,
     DELETELINE,
-    INLINECODE,
+    INLINEREF,
     COLOR,
     BG,
-    LINK
+    LINK,
+    PLAINTEXT
 }
 
 /**
@@ -138,63 +140,6 @@ export interface PlogToken {
         value: string;
     }[];
 }
-
-const tokenRegMap = {
-    lenient: {
-        codeblockStart: (str: string) => /^\s*`{3}[^`]*/.test(str),
-        codeblockEnd: (str: string) => /^`{3}\s*$/.test(str),
-        outlineblockStart: (str: string) =>
-            /^\s*#(\([\s\S]*\))?\[[^\]]*$/.test(str),
-        outlineblockEnd: (str: string) => /^[\s\S]*\]\s*$/.test(str),
-        tableblock: (str: string) => /^\s*\|([\s\S]*\|)+\s*$/.test(str),
-        tableblockAlign: (str: string) =>
-            /^\s*\|(\s*\:?-+\:?\s*\|)+\s*$/.test(str),
-        outline: (str: string) =>
-            /^\s*#(\([\s\S]*\))?\[[\s\S]*\]\s*$/.test(str),
-        title: (str: string) => /^\s*#\s+/.test(str),
-        subtitle: (str: string) => /^\s*#{2,}\s+/.test(str),
-        divider: (str: string) =>
-            /(^\s*\-{2,}\s*$)|(^\s*(\*{2,})\s*$)/.test(str),
-        refblock: (str: string) => /^\s*>\s+.*\s*/.test(str),
-        subrefblock: (str: string) => /^\s*>{2,}\s+.*\s*/.test(str),
-        img: (str: string) => /^[^!]*!\[[\s\S]*\]\([\s\S]+\)/.test(str),
-        imgblockStart: (str: string) => /^[^!]*!\[[\s\S]*\]\([^\)]*/.test(str),
-        imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str)
-
-        // TODO
-        // 有序列表
-        // 无序列表
-        // 图片块
-    },
-    strict: {
-        codeblockStart: (str: string) => /^`{3}[^`]*/.test(str),
-        codeblockEnd: (str: string) => /^`{3}\s*$/.test(str),
-        outlineblockStart: (str: string) =>
-            /^#(\([\s\S]*\))?\[[^\]]*$/.test(str),
-        outlineblockEnd: (str: string) => /^[\s\S]*\]\s*$/.test(str),
-        outline: (str: string) => /^#(\([\s\S]*\))?\[[\s\S]*\]$/.test(str),
-        tableblock: (str: string) => /^\|([\s\S]*\|)+$/.test(str),
-        tableblockAlign: (str: string) => /^\|(\s*\:?-+\:?\s*\|)+$/.test(str),
-        title: (str: string) => /^#\s+/.test(str),
-        subtitle: (str: string) => /^#{2,}\s+/.test(str),
-        divider: (str: string) => /(^\-{2,}$)|(^(\*{2,})$)/.test(str),
-        refblock: (str: string) => /^>\s+.*/.test(str),
-        subrefblock: (str: string) => /^>{2,}\s+.*/.test(str),
-        img: (str: string) => /^[^!]*!\[[\s\S]*\]\([\s\S]+\)/.test(str),
-        imgblockStart: (str: string) => /^[^!]*!\[[\s\S]*\]\([^\)]*/.test(str),
-        imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str)
-
-        // TODO
-        // 有序列表
-        // 无序列表
-        // 图片块
-    }
-};
-
-const textRegMap = {
-    // bold(str) {
-    // },
-};
 
 /**
  * 标题处理器
@@ -359,6 +304,95 @@ const _linkParser = (token: string) => {
 const _dividerParser = (token: string) => {
     return '<div class="divider"/>';
 };
+
+const mergeArr = (arr: any[], otherArr: any[]) => {
+    let len = arr.length;
+    let otherLen = otherArr.length;
+    let endLen = len > otherLen ? len : otherLen;
+    const result = [];
+    for (let i = 0; i < endLen; ++i) {
+        if (i < len) {
+            result.push(arr[i]);
+        }
+        if (i < otherLen) {
+            result.push(otherArr[i])
+        }
+    }
+    return result;
+};
+
+const tokenRegMap = {
+    lenient: {
+        codeblockStart: (str: string) => /^\s*`{3}[^`]*/.test(str),
+        codeblockEnd: (str: string) => /^`{3}\s*$/.test(str),
+        outlineblockStart: (str: string) =>
+            /^\s*#(\([\s\S]*\))?\[[^\]]*$/.test(str),
+        outlineblockEnd: (str: string) => /^[\s\S]*\]\s*$/.test(str),
+        tableblock: (str: string) => /^\s*\|([\s\S]*\|)+\s*$/.test(str),
+        tableblockAlign: (str: string) =>
+            /^\s*\|(\s*\:?-+\:?\s*\|)+\s*$/.test(str),
+        outline: (str: string) =>
+            /^\s*#(\([\s\S]*\))?\[[\s\S]*\]\s*$/.test(str),
+        title: (str: string) => /^\s*#\s+/.test(str),
+        subtitle: (str: string) => /^\s*#{2,}\s+/.test(str),
+        divider: (str: string) =>
+            /(^\s*\-{2,}\s*$)|(^\s*(\*{2,})\s*$)/.test(str),
+        refblock: (str: string) => /^\s*>\s+.*\s*/.test(str),
+        subrefblock: (str: string) => /^\s*>{2,}\s+.*\s*/.test(str),
+        img: (str: string) => /^[^!]*!\[[\s\S]*\]\([\s\S]+\)/.test(str),
+        imgblockStart: (str: string) => /^[^!]*!\[[\s\S]*\]\([^\)]*/.test(str),
+        imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str)
+
+        // 有序列表
+        // 无序列表
+    },
+    strict: {
+        codeblockStart: (str: string) => /^`{3}[^`]*/.test(str),
+        codeblockEnd: (str: string) => /^`{3}\s*$/.test(str),
+        outlineblockStart: (str: string) =>
+            /^#(\([\s\S]*\))?\[[^\]]*$/.test(str),
+        outlineblockEnd: (str: string) => /^[\s\S]*\]\s*$/.test(str),
+        outline: (str: string) => /^#(\([\s\S]*\))?\[[\s\S]*\]$/.test(str),
+        tableblock: (str: string) => /^\|([\s\S]*\|)+$/.test(str),
+        tableblockAlign: (str: string) => /^\|(\s*\:?-+\:?\s*\|)+$/.test(str),
+        title: (str: string) => /^#\s+/.test(str),
+        subtitle: (str: string) => /^#{2,}\s+/.test(str),
+        divider: (str: string) => /(^\-{2,}$)|(^(\*{2,})$)/.test(str),
+        refblock: (str: string) => /^>\s+.*/.test(str),
+        subrefblock: (str: string) => /^>{2,}\s+.*/.test(str),
+        img: (str: string) => /^[^!]*!\[[\s\S]*\]\([\s\S]+\)/.test(str),
+        imgblockStart: (str: string) => /^[^!]*!\[[\s\S]*\]\([^\)]*/.test(str),
+        imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str)
+
+        // 有序列表
+        // 无序列表
+    }
+};
+
+const tokenify_text = (token: PlogToken): PlogToken['children'] => {
+    const tokenChildren: PlogToken['children'] = [];
+
+    // 处理文案引用
+    const inlineref: PlogToken['children'] = [];
+    const textToken = token.value.split(/\`(?:[^\`]*)\`/).map((item) => ({
+        tag: TOKEN_TAG.TEXT,
+        value: item
+    }));
+    token.value.replace(/\`([^\`]*)\`/g, (str, match: string) => {
+        if (match) {
+            inlineref.push({
+                tag: TEXT_TAG.INLINEREF,
+                value: match
+            });
+        }
+        return '';
+    });
+
+    // 
+
+    console.log(mergeArr(textToken, inlineref))
+    return tokenChildren;
+}
 
 /**
  * 标记plog内容
@@ -721,14 +755,45 @@ export const tokenify = (
 
         // 匹配文本
         if (item.trim()) {
-            token.push({
-                tag: TOKEN_TAG.TEXT,
-                value: item.trimEnd()
-            });
+            const latestToken = token[token.length - 1];
+            if (latestToken && latestToken.tag === TOKEN_TAG.TEXT) {
+                latestToken.value += item.trimEnd();
+            } else {
+                token.push({
+                    tag: TOKEN_TAG.TEXT,
+                    value: item.trimEnd()
+                });
+            }
+        }
+
+        // 匹配空行
+        else {
+            const latestToken = token[token.length - 1];
+            if (
+                latestToken &&
+                latestToken.tag === TOKEN_TAG.TEXT &&
+                latestToken.value
+            ) {
+                token.push({
+                    tag: TOKEN_TAG.TEXT,
+                    value: ''
+                });
+            }
         }
     }
 
-    return token;
+    token
+        .filter((item) => item.tag === TOKEN_TAG.TEXT && item.value)
+        .forEach((token) => {
+            token.children = tokenify_text(token)
+            token.value = '';
+        });
+
+    return token.filter(
+        (item) =>
+            (item.tag === TOKEN_TAG.TEXT && item.value) ||
+            item.tag !== TOKEN_TAG.TEXT
+    );
 };
 
 export default (options?: PlogOptions): PlogParser =>
