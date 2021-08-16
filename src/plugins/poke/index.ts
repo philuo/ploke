@@ -1,6 +1,5 @@
 import { Plugin } from 'vite';
-import Plog, { tokenify } from './plog';
-const plog = Plog();
+import { tokenify } from './plog';
 
 interface PluginOptions {
     /**
@@ -37,18 +36,18 @@ export default (options: PluginOptions): Plugin =>
             //     tokenify(code);
             // }
             // console.timeEnd('TEST tokenify');
+            // console.log('token.length', JSON.stringify(tokenify(code)).length);
+            // console.log('poke.length', JSON.stringify(code).length);
             /// \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-            const token = tokenify(code);
-            let html = '';
-
+            let token = '[]';
             if (options.ssr) {
-                html = JSON.stringify(plog.render(token));
+                token = JSON.stringify(tokenify(code));
             }
 
             return `
-                export const token = ${JSON.stringify(token)};
-                export default ${html || JSON.stringify(code)};
+                export const token = ${token};
+                export default ${JSON.stringify(code)};
             `;
         }
     } as Plugin);

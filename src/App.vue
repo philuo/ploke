@@ -5,10 +5,11 @@
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
-import markdown, { token } from '~/README.md';
+import { token } from '~/README.md';
 const t = ref(token);
 computed(() => {
     if (token) {
+        console.log(123)
         t.value = token;
     }
 });
