@@ -5,20 +5,15 @@
  * @date 2021-08-11
  */
 import { defineComponent, PropType, onMounted, onUnmounted } from 'vue';
-import { TOKEN_TAG, PlogToken, parser_t } from '@/plugins/poke/plog';
+import { TOKEN_TAG, PlogToken, parser_t, hljs } from '@/plugins/poke/plog';
 import { lazyImageObserver } from '@/utils/lazy';
-import hljs from 'highlight.js';
-
-hljs.configure({
-    classPrefix: '',
-});
 
 const textParser = (token: PlogToken) => {
     if (!token) {
         return null;
     }
 
-    return <div class="plog-text" innerHTML={token.value} />;
+    return <p class="plog-text" innerHTML={token.val} />;
 };
 
 const codeblockParser = (token: PlogToken) => {
@@ -27,7 +22,7 @@ const codeblockParser = (token: PlogToken) => {
             <pre class={`lang-${token.lang}`} lang={token.lang}>
                 <code
                     innerHTML={
-                        hljs.highlight(token.value, {
+                        hljs.highlight(token.val, {
                             language: token.lang as string,
                         }).value
                     }
@@ -41,13 +36,13 @@ const codeblockParser = (token: PlogToken) => {
             class={(token.lang as string).trim() && `lang-${token.lang}`}
             lang={token.lang}
         >
-            <code>{token.value}</code>
+            <code>{token.val}</code>
         </pre>
     );
 };
 
 const tableParser = (token: PlogToken) => {
-    const content = token.value.split('\n');
+    const content = token.val.split('\n');
     const headCol = content[0]
         .replace(/\\\|/g, '&verticle_stroke;')
         .split('|')
@@ -102,9 +97,13 @@ const tableParser = (token: PlogToken) => {
                                                     '|'
                                                 )
                                                 .split('\\n')
-                                                .map((el, idx, arr) => (
+                                                .map((text, idx, arr) => (
                                                     <>
-                                                        {el}
+                                                        <span
+                                                            innerHTML={parser_t(
+                                                                text
+                                                            )}
+                                                        ></span>
                                                         {arr[idx + 1] && <br />}
                                                     </>
                                                 ))}
@@ -134,33 +133,33 @@ const outlineParser = (token: PlogToken) => {
                         class="head"
                         innerHTML={parser_t(token.lang || '导读')}
                     />
-                    <td class="body" innerHTML={parser_t(token.value || '')} />
+                    <td class="body" innerHTML={parser_t(token.val || '')} />
                 </tr>
             </tbody>
         </table>
     );
 };
 const titleParser = (token: PlogToken) => {
-    return <h1>{token.value}</h1>;
+    return <h1 innerHTML={parser_t(token.val)} />;
 };
 const subtitleParser = (token: PlogToken) => {
-    return <h2>{token.value}</h2>;
+    return <h2 innerHTML={parser_t(token.val)} />;
 };
 const dividerParser = (token: PlogToken) => {
-    return <div class="divider" />;
+    return <hr class="divider" />;
 };
 const refParser = (token: PlogToken) => {
     const children = (token.sub as PlogToken[]).map((item) => (
         <pre class={item.tag === TOKEN_TAG.REF && 'plog-sub-refblock'}>
-            <code class="ref-code">{item.value}</code>
+            <code class="ref-code" innerHTML={parser_t(item.val)} />
         </pre>
     ));
 
     return (
         <div class="plog-refblock">
-            {token.value && (
+            {token.val && (
                 <pre class="ref-text">
-                    <code class="ref-code">{token.value}</code>
+                    <code class="ref-code" innerHTML={parser_t(token.val)} />
                 </pre>
             )}
             {children}
@@ -170,8 +169,49 @@ const refParser = (token: PlogToken) => {
 const imgParser = (token: PlogToken) => {
     return (
         <p class="plog-imgblock">
-            <img data-src={token.value} class="plog-img" />
+            <img data-src={token.val} class="plog-img" />
         </p>
+    );
+};
+const olParser = (token: PlogToken) => {
+    const list = token.val.split('\n');
+    return (
+        <ol class="plog-ol">
+            {list.map((item) => (
+                <li innerHTML={parser_t(item)} />
+            ))}
+        </ol>
+    );
+};
+const ulParser = (token: PlogToken) => {
+    const list = token.val.split('\n');
+    return (
+        <ul class="plog-ul">
+            {list.map((item) => (
+                <li innerHTML={parser_t(item)} />
+            ))}
+        </ul>
+    );
+};
+const checkboxParser = (token: PlogToken) => {
+    return (
+        <div class="plog-checkbox">
+            <div
+                class={[
+                    'checkbox',
+                    !['x', 'X'].includes(token.lang as string)
+                        ? 'no-checked'
+                        : '',
+                ]}
+            >
+                <div class="icon">
+                    <svg viewBox="0 0 64 64" class="check-icon">
+                        <path d="M50.42,16.76L22.34,39.45l-8.1-11.46c-1.12-1.58-3.3-1.96-4.88-0.84c-1.58,1.12-1.95,3.3-0.84,4.88l10.26,14.51  c0.56,0.79,1.42,1.31,2.38,1.45c0.16,0.02,0.32,0.03,0.48,0.03c0.8,0,1.57-0.27,2.2-0.78l30.99-25.03c1.5-1.21,1.74-3.42,0.52-4.92  C54.13,15.78,51.93,15.55,50.42,16.76z"></path>
+                    </svg>
+                </div>
+                <span class="desc" innerHTML={parser_t(token.val)} />
+            </div>
+        </div>
     );
 };
 
@@ -185,10 +225,12 @@ const parser = {
     [TOKEN_TAG.REF as number]: refParser,
     [TOKEN_TAG.DIVIDER as number]: dividerParser,
     [TOKEN_TAG.IMG as number]: imgParser,
+    [TOKEN_TAG.OL as number]: olParser,
+    [TOKEN_TAG.UL as number]: ulParser,
+    [TOKEN_TAG.CHECKBOX as number]: checkboxParser,
 };
 
 const render = (tokenList: PlogToken[]) => {
-    console.log('tokenList', typeof tokenList);
     return tokenList.map((token) => parser[token.tag](token));
 };
 

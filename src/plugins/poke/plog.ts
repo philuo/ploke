@@ -1,7 +1,5 @@
-/**
- * 高亮方法
- */
-export * as hljs from 'highlight.js';
+// @ts-ignore
+export { default as hljs } from './hljs';
 
 /**
  * tokenify返回值类型
@@ -16,6 +14,9 @@ export enum TOKEN_TAG {
     TEXT,
     DIVIDER,
     IMG,
+    OL,
+    UL,
+    CHECKBOX,
     AUDIO,
     VEDIO,
 }
@@ -54,8 +55,8 @@ enum TEXT_TAG {
     UNDERLINE,
     DELETELINE,
     INLINEREF,
-    COLOR,
     BG,
+    COLOR,
     LINK,
 }
 
@@ -72,7 +73,7 @@ export interface PlogToken {
     /**
      * 默认值
      */
-    value: string;
+    val: string;
 
     /**
      * 块级元素额外修饰
@@ -94,14 +95,14 @@ const textRegMap = {
     [TEXT_TAG.ITALIC as number]: /\*([^\*]+)\*/g,
     [TEXT_TAG.UNDERLINE as number]: /@([^@]+)@/g,
     [TEXT_TAG.DELETELINE as number]: /~{2}([^~]+)~{2}/g,
-    [TEXT_TAG.COLOR as number]: /%\[([\s\S]+)\]\(([\s\S]+)\)/g,
-    [TEXT_TAG.BG as number]: /@\[([\s\S]+)\]\(([\s\S]+)\)/g,
-    [TEXT_TAG.LINK as number]: /\[([\s\S]*)\]\(([\s\S]+)\)/g,
+    [TEXT_TAG.BG as number]: /@\[([\s\S]+)\]\(([^\(\)]+)\)/g,
+    [TEXT_TAG.COLOR as number]: /%\[([\s\S]+)\]\(([^\(\)]+)\)/g,
+    [TEXT_TAG.LINK as number]: /\[([^\[\]]*)\]\(([^\(\)]+)\)/g,
 };
 
-export const parser_t = (text: string): string => {
+export const parser_t = (text: string, safe = true): string => {
     const inlineref: string[] = [];
-    return text
+    return (safe ? escapeHtml(text) : text)
         .replace(textRegMap[TEXT_TAG.INLINEREF], (substr, match) => {
             inlineref.push(`<span class="inlineref">${match}</span>`);
             return substr;
@@ -111,10 +112,13 @@ export const parser_t = (text: string): string => {
         .replace(textRegMap[TEXT_TAG.ITALIC], '<i>$1</i>')
         .replace(textRegMap[TEXT_TAG.UNDERLINE], '<ins>$1</ins>')
         .replace(textRegMap[TEXT_TAG.DELETELINE], '<del>$1</del>')
-        .replace(textRegMap[TEXT_TAG.COLOR], '<span style="color:$2">$1</span>')
         .replace(
             textRegMap[TEXT_TAG.BG],
-            '<span style="backgroud:$2">$1</span>'
+            '<span style="background:$2" class="bg">$1</span>'
+        )
+        .replace(
+            textRegMap[TEXT_TAG.COLOR],
+            '<span style="color:$2;text-decoration-color:$2">$1</span>'
         )
         .replace(
             textRegMap[TEXT_TAG.LINK],
@@ -143,21 +147,18 @@ const tokenRegMap = {
     img: (str: string) => /^[^!]*!\[[\s\S]*\]\([\s\S]+\)/.test(str),
     imgblockStart: (str: string) => /^[^!]*!\[[\s\S]*\]\([^\)]*/.test(str),
     imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str),
-
-    // 有序列表
-    // 无序列表
+    ol: (str: string) => /^\d+\.\s*[\s\S]*$/.test(str),
+    ul: (str: string) => /^-\s[\s\S]*$/.test(str),
+    checkbox: (str: string) => /^-\s\[[\sxX]\][\s\S]*$/.test(str)
 };
 
 /**
  * 标记plog内容
  * mark the content of plog.
  */
-export const tokenify = (
-    content: string,
-    safe: boolean = true
-): PlogToken[] => {
+export const tokenify = (content: string, safe = true): PlogToken[] => {
     if (!content) return [];
-    const text = (safe ? escapeHtml(content) : content).trim().split('\n');
+    const text = content.trim().split('\n');
     const token: PlogToken[] = [];
 
     for (let i = 0; i < text.length; ++i) {
@@ -174,14 +175,17 @@ export const tokenify = (
                 // 是否已匹配代码块内容
                 match: false,
 
-                // 以下类型 cycle = true
                 // 'markdown', 'md', 'mkdown', 'mkd', 'poke'
                 cycle: false,
             };
 
             // 匹配代码块语言
             codeblock.lang = item.replace(/`{3}/, '').trim();
-            if (['markdown', 'md', 'mkdown', 'mkd'].includes(codeblock.lang)) {
+            if (
+                ['markdown', 'md', 'mkdown', 'mkd', 'poke'].includes(
+                    codeblock.lang
+                )
+            ) {
                 codeblock.cycle = true;
             }
 
@@ -203,7 +207,7 @@ export const tokenify = (
             } else if (!codeblock.cycle) {
                 token.push({
                     tag: TOKEN_TAG.CODE,
-                    value: chunkQueue.join('\n'),
+                    val: chunkQueue.join('\n'),
                     lang: codeblock.lang,
                 });
                 i = currentLine;
@@ -262,13 +266,13 @@ export const tokenify = (
                     childMarkOpen.index,
                     parentMarkClose.index
                 );
-                let value = '';
+                let val = '';
                 for (let line = i + 1; line < endLine; ++line) {
-                    value += `${text[line]}\n`;
+                    val += `${text[line]}\n`;
                 }
                 token.push({
                     tag: TOKEN_TAG.CODE,
-                    value,
+                    val,
                     lang: codeblock.lang,
                 });
                 i = endLine;
@@ -284,7 +288,7 @@ export const tokenify = (
             token.push({
                 tag: TOKEN_TAG.OUTLINE,
                 lang: matchArr && matchArr[1] ? matchArr[1] : '',
-                value: matchArr && matchArr[2] ? matchArr[2] : '',
+                val: matchArr && matchArr[2] ? matchArr[2] : '',
             });
             continue;
         }
@@ -314,7 +318,7 @@ export const tokenify = (
             if (outlineblockEnd) {
                 token.push({
                     tag: TOKEN_TAG.OUTLINE,
-                    value: chunkCode,
+                    val: chunkCode,
                     lang,
                 });
             }
@@ -325,14 +329,14 @@ export const tokenify = (
         if (tokenRegMap.title(item)) {
             token.push({
                 tag: TOKEN_TAG.TITLE,
-                value: item.trim().substring(2),
+                val: item.trim().substring(2),
             });
             continue;
         }
         if (tokenRegMap.subtitle(item)) {
             token.push({
                 tag: TOKEN_TAG.SUBTITLE,
-                value: item.trim().substring(item.indexOf(' ') + 1),
+                val: item.trim().substring(item.indexOf(' ') + 1),
             });
             continue;
         }
@@ -345,7 +349,7 @@ export const tokenify = (
             i += 1;
             const tableblock = {
                 lang: '',
-                value: '',
+                val: '',
                 match: false,
             };
             const headColNum = item.replace(/\\\|/g, '').split('|');
@@ -361,13 +365,13 @@ export const tokenify = (
                 .join(',');
             if (headColNum.length === alignColNum.length) {
                 tableblock.lang = lang;
-                tableblock.value = item.trim();
+                tableblock.val = item.trim();
                 tableblock.match = true;
                 while (tableblock.match) {
                     const tableblockBody = tokenRegMap.tableblock(text[i + 1]);
                     if (tableblockBody) {
                         i += 1;
-                        tableblock.value += '\n' + text[i].trim();
+                        tableblock.val += '\n' + text[i].trim();
                     }
 
                     // 匹配到非表格体后释放捕获状态
@@ -375,7 +379,7 @@ export const tokenify = (
                 }
                 token.push({
                     tag: TOKEN_TAG.TABLE,
-                    value: tableblock.value,
+                    val: tableblock.val,
                     lang: tableblock.lang,
                 });
                 continue;
@@ -384,11 +388,100 @@ export const tokenify = (
             }
         }
 
+        // 匹配checkbox
+        if (tokenRegMap.checkbox(item)) {
+            let currentLine = i + 1;
+            let lang = '';
+            let chunkCode = '';
+            item.replace(/^-\s\[([\sxX])\]([\s\S]*)/, (_, language, val) => {
+                lang = language.trim();
+                chunkCode = val.trimEnd();
+                return '';
+            });
+
+            while (currentLine < text.length) {
+                const currentItem = text[currentLine];
+                if (!currentItem.trim()) {
+                    i = currentLine;
+                    break;
+                }
+                if (tokenRegMap.checkbox(currentItem)) {
+                    i = currentLine - 1;
+                    break;
+                } else {
+                    i = currentLine;
+                    chunkCode += currentItem.trim();
+                }
+                currentLine += 1;
+            }
+
+            token.push({
+                tag: TOKEN_TAG.CHECKBOX,
+                val: chunkCode,
+                lang,
+            });
+            continue;
+        }
+
+        // 匹配列表
+        if (tokenRegMap.ol(item)) {
+            let currentLine = i + 1;
+            let chunkCode: string[] = [item.replace(/^\d+\.\s*/, '').trimEnd()];
+
+            while (currentLine < text.length) {
+                const currentItem = text[currentLine];
+                if (tokenRegMap.ol(currentItem)) {
+                    chunkCode.push(
+                        currentItem.replace(/^\d+\.\s*/, '').trimEnd()
+                    );
+                    i = currentLine;
+                } else if (!currentItem.trim()) {
+                    i = currentLine;
+                    break;
+                } else {
+                    chunkCode[chunkCode.length - 1] += currentItem
+                        .replace(/^\d+\.\s*/, '')
+                        .trimEnd();
+                }
+                currentLine += 1;
+            }
+            token.push({
+                tag: TOKEN_TAG.OL,
+                val: chunkCode.join('\n'),
+            });
+            continue;
+        }
+        if (tokenRegMap.ul(item)) {
+            let currentLine = i + 1;
+            let chunkCode: string[] = [item.replace(/^-\s*/, '').trimEnd()];
+
+            while (currentLine < text.length) {
+                const currentItem = text[currentLine];
+                if (tokenRegMap.ul(currentItem)) {
+                    chunkCode.push(currentItem.replace(/^-\s*/, '').trimEnd());
+                    i = currentLine;
+                } else if (!currentItem.trim()) {
+                    i = currentLine;
+                    break;
+                } else {
+                    chunkCode[chunkCode.length - 1] += currentItem
+                        .replace(/^-\s*/, '')
+                        .trimEnd();
+                }
+                currentLine += 1;
+            }
+            token.push({
+                tag: TOKEN_TAG.UL,
+                val: chunkCode.join('\n'),
+            });
+            continue;
+        }
+
         // 匹配分隔线
         if (tokenRegMap.divider(item)) {
             token.push({
                 tag: TOKEN_TAG.DIVIDER,
-                value: item.trim(),
+                val: item.trim(),
             });
             continue;
         }
@@ -399,7 +492,7 @@ export const tokenify = (
             const chunkCode: PlogToken[] = [
                 {
                     tag: TOKEN_TAG.TEXT,
-                    value: `${item.replace(/^\s*>\s*/, '')}\n`,
+                    val: `${item.replace(/^\s*>\s*/, '')}\n`,
                 },
             ];
 
@@ -415,11 +508,11 @@ export const tokenify = (
                 tokenRegMap.subrefblock(currentItem)
                     ? chunkCode.push({
                           tag: TOKEN_TAG.REF,
-                          value: `${currentItem.replace(/^\s*>+\s*/, '')}\n`,
+                          val: `${currentItem.replace(/^\s*>+\s*/, '')}\n`,
                       })
                     : (chunkCode[
                           chunkCode.length - 1
-                      ].value += `${currentItem}\n`);
+                      ].val += `${currentItem}\n`);
                 currentLine += 1;
             }
 
@@ -427,7 +520,7 @@ export const tokenify = (
 
             token.push({
                 tag: TOKEN_TAG.REF,
-                value: (chunkCode.shift() as PlogToken).value,
+                val: (chunkCode.shift() as PlogToken).val,
                 sub: chunkCode,
             });
             continue;
@@ -439,22 +532,22 @@ export const tokenify = (
                 /^([^!]*)!\[([\s\S]*)\]\(([\s\S]+)\)([\s\S]*)$/
             ) as string[];
             let lang = '';
-            let value = '';
+            let val = '';
             if (matchArr[1]) {
                 token.push({
                     tag: TOKEN_TAG.TEXT,
-                    value: matchArr[1],
+                    val: matchArr[1],
                 });
             }
             token.push({
                 tag: TOKEN_TAG.IMG,
                 lang: matchArr[2] || '',
-                value: matchArr[3] || '',
+                val: matchArr[3] || '',
             });
             if (matchArr[4]) {
                 token.push({
                     tag: TOKEN_TAG.TEXT,
-                    value: matchArr[4],
+                    val: matchArr[4],
                 });
             }
             continue;
@@ -485,18 +578,18 @@ export const tokenify = (
                     if (matchArr[1]) {
                         token.push({
                             tag: TOKEN_TAG.TEXT,
-                            value: matchArr[1],
+                            val: matchArr[1],
                         });
                     }
                     token.push({
                         tag: TOKEN_TAG.IMG,
                         lang,
-                        value: `${src}${(subMatchArr[1] || '').trim()}`,
+                        val: `${src}${(subMatchArr[1] || '').trim()}`,
                     });
                     if (subMatchArr[2]) {
                         token.push({
                             tag: TOKEN_TAG.TEXT,
-                            value: subMatchArr[2],
+                            val: subMatchArr[2],
                         });
                     }
                     break;
@@ -513,11 +606,11 @@ export const tokenify = (
         if (item.trim()) {
             const latestToken = token[token.length - 1];
             if (latestToken && latestToken.tag === TOKEN_TAG.TEXT) {
-                latestToken.value += item.trimEnd();
+                latestToken.val += item.trimEnd();
             } else {
                 token.push({
                     tag: TOKEN_TAG.TEXT,
-                    value: item.trimEnd(),
+                    val: item.trimEnd(),
                 });
             }
         }
@@ -528,25 +621,25 @@ export const tokenify = (
             if (
                 latestToken &&
                 latestToken.tag === TOKEN_TAG.TEXT &&
-                latestToken.value
+                latestToken.val
             ) {
                 token.push({
                     tag: TOKEN_TAG.TEXT,
-                    value: '',
+                    val: '',
                 });
             }
         }
     }
 
     token
-        .filter((item) => item.tag === TOKEN_TAG.TEXT && item.value)
+        .filter((item) => item.tag === TOKEN_TAG.TEXT && item.val)
         .forEach((token) => {
-            token.value = parser_t(token.value);
+            token.val = parser_t(token.val, safe);
         });
 
     return token.filter(
         (item) =>
-            (item.tag === TOKEN_TAG.TEXT && item.value) ||
+            (item.tag === TOKEN_TAG.TEXT && item.val) ||
             item.tag !== TOKEN_TAG.TEXT
     );
 };

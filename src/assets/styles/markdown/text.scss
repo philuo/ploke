@@ -1,0 +1,59 @@
+.plog-text {
+    .inlineref {
+        font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+        color: #ff502c;
+        text-decoration-color: #ff502c;
+        background: #fff5f5;
+        border-radius: 0.02rem;
+        padding: 0.065em 0.4em;
+    }
+
+    ins {
+        .inlineref {
+            text-decoration: underline;
+        }
+    }
+
+    del {
+        .inlineref {
+            text-decoration: line-through;
+        }
+    }
+
+    a {
+        position: relative;
+        
+        &:after {
+            position: absolute;
+            content: '';
+            width: 1em;
+            height: 1em;
+            top: 50%;
+            left: -1em;
+            background: url(@icons/link.svg);
+            background-size: 100% 100%;
+            transform: translateY(-50%) scale(1.1);
+        }
+    }
+
+    a:link,
+    a:visited,
+    a:hover,
+    a:active {
+        text-decoration: none;
+        color: #0269c8;
+        font-weight: 700;
+        margin: 0 .02rem 0 1.1em;
+    }
+}
+
+.plog-article {
+    .bg {
+        font-size: 0.87em;
+        font-family: Menlo, Monaco, Consolas, Courier New, monospace;
+        border-radius: 0.02rem;
+        background-color: #fff5f5;
+        color: #ff502c;
+        padding: 0.065em 0.4em;
+    }
+}

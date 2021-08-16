@@ -9,7 +9,8 @@ export default defineConfig({
         alias: {
             '~': __dirname,
             '@': resolve(__dirname, 'src'),
-            '@styles': resolve(__dirname, 'src/assets/styles')
+            '@styles': resolve(__dirname, 'src/assets/styles'),
+            '@icons': resolve(__dirname, 'src/assets/icons'),
         }
     },
     plugins: [vue(), vueJsx(), poke({ ssr: true })],

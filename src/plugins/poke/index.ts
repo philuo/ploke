@@ -1,6 +1,5 @@
 import { Plugin } from 'vite';
 import { tokenify } from './plog';
-
 interface PluginOptions {
     /**
      * 是否服务器端渲染
@@ -31,14 +30,18 @@ export default (options: PluginOptions): Plugin =>
             }
 
             /// TEST \\\\\\\\\\\\\\\\\\\\\\\\\
-            // console.time('TEST tokenify');
-            // for(let i = 0; i < 1000; ++i) {
-            //     tokenify(code);
+            console.time('100 times tokenify');
+            // for(let i = 0; i < 100; ++i) {
+                tokenify(code);
             // }
-            // console.timeEnd('TEST tokenify');
+            console.timeEnd('100 times tokenify');
             // console.log('token.length', JSON.stringify(tokenify(code)).length);
             // console.log('poke.length', JSON.stringify(code).length);
-            /// \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+            console.log(
+                'Ratio: token / poke',
+                JSON.stringify(tokenify(code)).length /
+                    JSON.stringify(code).length
+            );
 
             let token = '[]';
             if (options.ssr) {

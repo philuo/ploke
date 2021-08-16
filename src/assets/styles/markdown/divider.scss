@@ -1,7 +1,10 @@
 .plog-article {
     .divider {
-        border-bottom: .01rem solid #ececec;
         margin-top: -.01rem;
         margin-bottom: .08rem;
+        border-style: solid;
+        border-color: #ececec;
+        border-top: none;
+        border-bottom-width: 0.014rem;
     }
 }

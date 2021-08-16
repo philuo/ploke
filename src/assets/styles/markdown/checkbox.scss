@@ -1,0 +1,35 @@
+.plog-checkbox {
+    margin-bottom: .03rem;
+
+    .no-checked {
+        .icon {
+            box-sizing: border-box;
+            background: #f8f8f8;
+            border: solid .01rem #d1d1d1;
+        }
+
+        .check-icon {
+            display: none;
+        }
+    }
+
+    .icon {
+        display: inline-block;
+        vertical-align: middle;
+        width: .15rem;
+        height: .15rem;
+        background: #aaa;
+        border-radius: .02rem;
+    }
+
+    .check-icon {
+        transform: scale(.9);
+        fill: #ededed;
+    }
+
+    .desc {
+        vertical-align: middle;
+        word-break: break-all;
+        margin-left: .03rem;
+    }
+}

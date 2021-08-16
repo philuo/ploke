@@ -18,15 +18,15 @@
         font-size: 0.144rem;
         overflow-x: auto;
         box-sizing: border-box;
-        border: 0.01rem solid #a4a4a4;
+        border: 0.01rem solid #f0f0f0;
         border-collapse: collapse;
 
         td,
         th {
             padding: 12px;
             border: 0;
-            border-left: 0.01rem solid #a4a4a4;
-            border-bottom: 0.01rem solid #a4a4a4;
+            border-left: 0.01rem solid #f0f0f0;
+            border-bottom: 0.01rem solid #f0f0f0;
         }
 
         td:first-child,
@@ -36,7 +36,7 @@
         }
 
         th {
-            background-color: #d5d5d5;
+            background-color: #fafafc;
         }
     }
 }
