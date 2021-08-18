@@ -1,0 +1,11 @@
+.editor-container {
+
+    .editor {
+        padding: .1rem;
+
+        &:focus {
+            outline: none;
+            border-left: 1.4px solid rgb(15, 184, 15);
+        }
+    }
+}

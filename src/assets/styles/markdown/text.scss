@@ -19,32 +19,6 @@
             text-decoration: line-through;
         }
     }
-
-    a {
-        position: relative;
-        
-        &:after {
-            position: absolute;
-            content: '';
-            width: 1em;
-            height: 1em;
-            top: 50%;
-            left: -1em;
-            background: url(@icons/link.svg);
-            background-size: 100% 100%;
-            transform: translateY(-50%) scale(1.1);
-        }
-    }
-
-    a:link,
-    a:visited,
-    a:hover,
-    a:active {
-        text-decoration: none;
-        color: #0269c8;
-        font-weight: 700;
-        margin: 0 .02rem 0 1.1em;
-    }
 }
 
 .plog-article {

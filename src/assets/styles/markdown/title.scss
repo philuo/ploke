@@ -1,5 +1,33 @@
 .plog-article {
     font-family: googlesans, Roboto, sans-serif;
+    box-shadow: 1px 2px 12px #eee;
+    border-radius: 0.12rem;
+
+    a {
+        position: relative;
+
+        &:after {
+            position: absolute;
+            content: '';
+            width: 1em;
+            height: 1em;
+            top: 50%;
+            left: -1.1em;
+            background: url(@icons/link.svg);
+            background-size: 100% 100%;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        &:link,
+        &:visited,
+        &:hover,
+        &:active {
+            text-decoration: none;
+            color: #0269c8;
+            font-weight: 700;
+            margin: 0 0.02rem 0 1.1em;
+        }
+    }
 
     h1,
     h2 {
@@ -9,13 +37,13 @@
     }
 
     h1 {
-        font-size: .28rem;
-        line-height: .32rem;
-        margin: 0 0 .08rem;
+        font-size: 0.28rem;
+        line-height: 0.32rem;
+        margin: 0.2rem 0;
     }
 
     h2 {
-        font-size: .24rem;
+        font-size: 0.24rem;
     }
 
     .article-content {

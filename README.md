@@ -80,7 +80,7 @@ console.log(token)
 |test|test2||
 ```
 
-|标题1\|\n2[ww](212221)|标题2|121|
+|标题 1 \|\n2[ww](212221)|标题2|121|
 |:--|:-:|-|
 |%[test](blue)\n2|test2||
 |test|test2||
