@@ -1,6 +1,6 @@
 import hljs from './core';
 
-import typescript from './languages/typescript';
+import { javascript, typescript } from './languages/typescript';
 import c from './languages/c';
 import cpp from './languages/cpp';
 import cmake from './languages/cmake';
@@ -18,7 +18,7 @@ import nginx from './languages/nginx';
 import xml from './languages/xml';
 import markdown from './languages/markdown';
 
-hljs.registerLanguage('javascript', typescript);
+hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('c', c);
 hljs.registerLanguage('cpp', cpp);

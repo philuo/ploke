@@ -1,26 +1,30 @@
 <template>
     <div class="editor-container">
         <div class="preview">
-            <Plog :class="$style.container" :token="token" />
+            <Plog :class="$style.container" :token="token" hotmode/>
         </div>
-        <textarea class="editor" @input="handleInput" @keydown="handleKeydown"/>
-        <!-- <div  tabindex="1" @input="handleInput" /> -->
+        <textarea
+            class="editor"
+            @input="handleInput"
+            @keydown="handleKeyDown"
+            autofocus
+        />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { tokenify, PlogToken } from '@/plugins/poke/plog';
-// import { token } from '~/README.md';
-// const t = ref(token);
-// computed(() => {
-//     if (token) {
-//         t.value = token;
-//     }
-// })
-const token = ref<PlogToken[]>([]);
+import { taskQueue, editorKeyControl } from '@/utils/index';
+import { token as token2 } from '../README.md';
+
+const task = taskQueue();
+const token = ref<PlogToken[]>(token2 as []);
 const handleInput = ({ target: { value } }: any) => {
-    token.value = tokenify(value);
+    task.set('tokenify', () => (token.value = tokenify(value)));
+};
+const handleKeyDown = (event: KeyboardEvent) => {
+    editorKeyControl(event, (value: string) => token.value = tokenify(value));
 };
 </script>
 

@@ -179,7 +179,7 @@ Website: https://developer.mozilla.org/en-US/docs/Web/JavaScript
 */
 
 /** @type LanguageFn */
-function javascript(hljs) {
+export function javascript(hljs) {
   /**
    * Takes a string like "<Booger" and checks to see
    * if we can find a matching "</Booger" later in the
@@ -706,7 +706,7 @@ Category: common, scripting
 */
 
 /** @type LanguageFn */
-function typescript(hljs) {
+export function typescript(hljs) {
   const IDENT_RE$1 = IDENT_RE;
   const NAMESPACE = {
     beginKeywords: 'namespace', end: /\{/, excludeEnd: true
@@ -789,5 +789,3 @@ function typescript(hljs) {
 
   return tsLanguage;
 }
-
-export default typescript;

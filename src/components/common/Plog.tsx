@@ -4,7 +4,7 @@
  * @author Perfumere<1061393710@qq.com>
  * @date 2021-08-11
  */
-import { defineComponent, PropType, onMounted, onUnmounted } from 'vue';
+import { defineComponent, PropType, onMounted, onUnmounted, onUpdated } from 'vue';
 import { TOKEN_TAG, PlogToken, parser_t, hljs } from '@/plugins/poke/plog';
 import { lazyImageObserver } from '@/utils/lazy';
 
@@ -241,6 +241,10 @@ export default defineComponent({
             type: Array as PropType<PlogToken[]>,
             default: [],
         },
+        hotmode: {
+            type: Boolean,
+            default: false
+        }
     } as const,
     setup(props) {
         onMounted(() => {
@@ -250,6 +254,13 @@ export default defineComponent({
         });
         onUnmounted(() => {
             lazyImageObserver.disconnect();
+        });
+        onUpdated(() => {
+            if (props.hotmode) {
+                Array.from(document.querySelectorAll('.plog-article img')).forEach(
+                    (item) => lazyImageObserver.observe(item)
+                );
+            }
         });
 
         return () => (

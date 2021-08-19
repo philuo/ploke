@@ -100,7 +100,7 @@ const textRegMap = {
     [TEXT_TAG.LINK as number]: /\[([^\[\]]*)\]\(([^\(\)]+)\)/g,
 };
 
-export const parser_t = (text: string, safe = true): string => {
+export const parser_t = (text: string, safe = false): string => {
     const inlineref: string[] = [];
     return (safe ? escapeHtml(text) : text)
         .replace(textRegMap[TEXT_TAG.INLINEREF], (substr, match) => {
@@ -120,14 +120,14 @@ export const parser_t = (text: string, safe = true): string => {
             textRegMap[TEXT_TAG.COLOR],
             '<span style="color:$2;text-decoration-color:$2">$1</span>'
         )
-        .replace(
-            textRegMap[TEXT_TAG.LINK],
-            (_, alias, href) =>
-                `<a href="${href.trim()}" target="_blank">${alias}</a>`
-        )
+        .replace(textRegMap[TEXT_TAG.LINK], (_, alias, src) => {
+            let name = alias.trim();
+            let href = src.trim();
+            return `<a href="${href}" target="_blank">${name || href}</a>`;
+        })
         .replace(
             textRegMap[TEXT_TAG.INLINEREF],
-            (_) => inlineref.pop() as string
+            (_) => inlineref.shift() as string
         );
 };
 
@@ -149,14 +149,14 @@ const tokenRegMap = {
     imgblockEnd: (str: string) => /^[\s\S]*\)[\s\S]*$/.test(str),
     ol: (str: string) => /^\d+\.\s*[\s\S]*$/.test(str),
     ul: (str: string) => /^-\s[\s\S]*$/.test(str),
-    checkbox: (str: string) => /^-\s\[[\sxX]\][\s\S]*$/.test(str)
+    checkbox: (str: string) => /^-\s\[[\sxX]\][\s\S]*$/.test(str),
 };
 
 /**
  * 标记plog内容
  * mark the content of plog.
  */
-export const tokenify = (content: string, safe = true): PlogToken[] => {
+export const tokenify = (content: string, safe = false): PlogToken[] => {
     if (!content) return [];
     const text = content.trim().split('\n');
     const token: PlogToken[] = [];
