@@ -15,7 +15,7 @@ export default defineConfig({
     },
     plugins: [vue(), vueJsx(), poke({ ssr: true })],
     optimizeDeps: {
-        exclude: ['vue']
+        exclude: ['vue', 'monaco-editor']
     },
     css: {
         preprocessorOptions: {

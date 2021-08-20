@@ -1,35 +1,83 @@
 <template>
     <div class="editor-container">
         <div class="preview">
-            <Plog :class="$style.container" :token="token" hotmode/>
+            <Plog :class="$style.container" :token="markdown" hotmode />
         </div>
-        <textarea
-            class="editor"
-            @input="handleInput"
-            @keydown="handleKeyDown"
-            autofocus
-        />
+        <div ref="monacoRef" class="editor monaco" @keydown="editorKeyControl" />
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { tokenify, PlogToken } from '@/plugins/poke/plog';
-import { taskQueue, editorKeyControl } from '@/utils/index';
-import { token as token2 } from '../README.md';
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor/esm/vs/editor/contrib/find/findController';
+import 'monaco-editor/esm/vs/editor/contrib/folding/folding';
+import 'monaco-editor/esm/vs/editor/contrib/multicursor/multicursor';
+import 'monaco-editor/esm/vs/editor/contrib/linesOperations/linesOperations';
 
+import { ref, onMounted, onUnmounted } from 'vue';
+import { taskQueue, editorKeyControl } from '@/utils/index';
+import markdown from '../README.md';
+
+const monacoRef = ref<HTMLElement | null>(null);
 const task = taskQueue();
-const token = ref<PlogToken[]>(token2 as []);
-const handleInput = ({ target: { value } }: any) => {
-    task.set('tokenify', () => (token.value = tokenify(value)));
-};
-const handleKeyDown = (event: KeyboardEvent) => {
-    editorKeyControl(event, (value: string) => token.value = tokenify(value));
-};
+const token = ref<string>(markdown);
+
+let monaco: editor.IStandaloneCodeEditor;
+onMounted(() => {
+    monaco = editor.create((monacoRef.value as HTMLElement), {
+        value: markdown,
+        language: 'markdown',
+        readOnly: false,
+        lineNumbers: 'on',
+        multiCursorPaste: 'full',
+        scrollbar: {
+            horizontalScrollbarSize: 0,
+            horizontalSliderSize: 0,
+            verticalScrollbarSize: 0,
+            verticalSliderSize: 0,
+        },
+        minimap: {
+            enabled: false,
+        },
+        fontSize: 14,
+        lineDecorationsWidth: 0,
+        renderLineHighlight: 'line',
+        lineHeight: 1.5,
+        folding: true,
+    });
+    monaco.onDidChangeModelContent(() => {
+        task.set('changeMonacoContent', () => token.value = monaco.getValue());
+    });
+});
+onUnmounted(() => {
+    monaco && monaco.dispose();
+});
 </script>
 
 <style lang="scss">
 @import '@styles/editor';
+.monaco {
+    .monaco {
+        width: 90%;
+        height: 300px;
+        margin: 20px auto;
+        padding: 10px 0;
+        box-sizing: border-box;
+        border-radius: 12px;
+        box-shadow: 0 0 8px #eee;
+        overflow: hidden;
+
+        .view-line {
+            width: calc(100% - 16px);
+        }
+
+        .monaco-editor {
+            .scroll-decoration {
+                box-shadow: none;
+            }
+        }
+    }
+}
 </style>
 
 <style lang="scss" module>

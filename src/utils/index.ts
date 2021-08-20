@@ -123,4 +123,76 @@ export class AutoTaskQueue {
     }
 }
 
+/// on once remove
+enum ExecStatus {
+    One,
+    Every,
+    Done,
+}
+
+export interface EventMaping {
+    [key: string]: {
+        /**
+         * 0 - 仅执行一次
+         * 1 - 不限执行次数
+         * 2 - 执行完成
+         */
+        status: ExecStatus;
+
+        cb: Function;
+    }[];
+}
+
+const events: EventMaping = {};
+
+export class EventBus {
+    static on(e: string, cb: Function) {
+        e && !events[e] && (events[e] = []);
+        events[e] && typeof cb === 'function'
+            && !~events[e].findIndex((p) => p.cb === cb)
+            && events[e].push({ cb, status: ExecStatus.Every });
+    }
+
+    static once(e: string, cb: Function) {
+        e && !events[e] && (events[e] = []);
+        events[e] && typeof cb === 'function'
+        && !~events[e].findIndex((p) => p.cb === cb)
+        && events[e].push({ cb, status: ExecStatus.One });
+    }
+
+    static remove(e: string, cb: Function) {
+        if (!e || !events[e]) {
+            return false;
+        }
+
+        const index = events[e].findIndex((p) => p.cb === cb);
+
+        if (~index) {
+            events[e].splice(index, 1);
+        }
+
+        return false;
+    }
+
+    static emit(e: string, ...args: any) {
+        if (!events[e]) {
+            return false;
+        }
+        events[e].forEach(async (p) => {
+            if (p.status !== ExecStatus.Done) {
+                await p.cb(...args);
+            }
+            if (p.status === ExecStatus.One) {
+                p.status = ExecStatus.Done;
+            }
+        });
+    }
+}
+
+export const isPhone = (ua: string): boolean => {
+    return /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i.test(
+        ua
+    );
+}
+
 export const taskQueue = () => new AutoTaskQueue();

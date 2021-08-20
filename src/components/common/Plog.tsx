@@ -4,8 +4,20 @@
  * @author Perfumere<1061393710@qq.com>
  * @date 2021-08-11
  */
-import { defineComponent, PropType, onMounted, onUnmounted, onUpdated } from 'vue';
-import { TOKEN_TAG, PlogToken, parser_t, hljs } from '@/plugins/poke/plog';
+import {
+    defineComponent,
+    PropType,
+    onMounted,
+    onUnmounted,
+    onUpdated,
+} from 'vue';
+import {
+    TOKEN_TAG,
+    PlogToken,
+    parser_t,
+    hljs,
+    tokenify,
+} from '@/plugins/poke/plog';
 import { lazyImageObserver } from '@/utils/lazy';
 
 const textParser = (token: PlogToken) => {
@@ -230,21 +242,21 @@ const parser = {
     [TOKEN_TAG.CHECKBOX as number]: checkboxParser,
 };
 
-const render = (tokenList: PlogToken[]) => {
-    return tokenList.map((token) => parser[token.tag](token));
+const render = (tokenList: string | PlogToken[]) => {
+    return tokenify(tokenList).map((token) => parser[token.tag](token));
 };
 
 export default defineComponent({
     name: 'Plog',
     props: {
         token: {
-            type: Array as PropType<PlogToken[]>,
+            type: [String, Array] as PropType<string | PlogToken[]>,
             default: [],
         },
         hotmode: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     } as const,
     setup(props) {
         onMounted(() => {
@@ -257,12 +269,11 @@ export default defineComponent({
         });
         onUpdated(() => {
             if (props.hotmode) {
-                Array.from(document.querySelectorAll('.plog-article img')).forEach(
-                    (item) => lazyImageObserver.observe(item)
-                );
+                Array.from(
+                    document.querySelectorAll('.plog-article img')
+                ).forEach((item) => lazyImageObserver.observe(item));
             }
         });
-
         return () => (
             <article class="plog-article">{render(props.token)}</article>
         );

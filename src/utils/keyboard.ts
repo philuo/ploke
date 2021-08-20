@@ -7,10 +7,7 @@ function forward_enter(event: KeyboardEvent) {
     const element = event.target as HTMLTextAreaElement;
     let content = element.value;
     let index = content.lastIndexOf('\n', element.selectionEnd - 1);
-    if (index === -1) {
-        index = 0;
-    }
-    content = content.substring(0, index) + '\n' + content.substring(element.selectionEnd);
+    content = content.substring(0, index) + '\n' + content.substring(index);
     element.value = content;
     element.setSelectionRange(index + 1, index + 1);
 }
@@ -19,7 +16,7 @@ function backward_enter(event: KeyboardEvent) {
     event.preventDefault();
     const element = event.target as HTMLTextAreaElement;
     let content = element.value;
-    let index = content.indexOf('\n', element.selectionEnd);
+    let index = content.indexOf('\n', element.selectionEnd - 1);
     if (index === -1) {
         index = content.length;
     }
@@ -29,6 +26,10 @@ function backward_enter(event: KeyboardEvent) {
 }
 
 function save(event: KeyboardEvent) {
+    event.preventDefault();
+}
+
+function print(event: KeyboardEvent) {
     event.preventDefault();
 }
 
@@ -47,26 +48,24 @@ function backspace(event: KeyboardEvent) {
     }
 
     // 2. 找到光标开头的换行字符位置
-    let index = content.lastIndexOf('\n', selectionStart);
+    let index = content.lastIndexOf('\n', selectionStart - 1);
 
     // 当前一个字符已经是换行符了
-    if (index === selectionStart - 1) {
-        index -= 1;
-    }
-
-    content = content.substring(0, index + 1) + content.substring(selectionEnd);
+    index = index === -1 ? 0 : index;
+    content = content.substring(0, index) + content.substring(selectionEnd);
     element.value = content;
-    element.setSelectionRange(index + 1, index + 1);
+    element.setSelectionRange(index, index);
 }
 
 const META_CONTROL: KeyControlMap = {
-    ENTER: backward_enter,
+    // ENTER: backward_enter,
+    // BACKSPACE: backspace,
     S: save,
-    BACKSPACE: backspace,
+    P: print
 };
 
 const META_SHIFT_CONTROL: KeyControlMap = {
-    ENTER: forward_enter
+    P: print
 };
 
 export const editorKeyControl = (event: KeyboardEvent, cb?: Function) => {

@@ -156,8 +156,11 @@ const tokenRegMap = {
  * 标记plog内容
  * mark the content of plog.
  */
-export const tokenify = (content: string, safe = false): PlogToken[] => {
+export const tokenify = (content: string | PlogToken[], safe = false): PlogToken[] => {
     if (!content) return [];
+    if (Array.isArray(content)) {
+        return content;
+    }
     const text = content.trim().split('\n');
     const token: PlogToken[] = [];
 
