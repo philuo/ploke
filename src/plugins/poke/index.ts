@@ -29,28 +29,6 @@ export default (options: PluginOptions): Plugin =>
                 return null;
             }
 
-            /// TEST \\\\\\\\\\\\\\\\\\\\\\\\\
-            console.time('100 times tokenify');
-            // for(let i = 0; i < 100; ++i) {
-                tokenify(code);
-            // }
-            console.timeEnd('100 times tokenify');
-            // console.log('token.length', JSON.stringify(tokenify(code)).length);
-            // console.log('poke.length', JSON.stringify(code).length);
-            console.log(
-                'Ratio: token / poke',
-                JSON.stringify(tokenify(code)).length /
-                    JSON.stringify(code).length
-            );
-
-            let token = '[]';
-            if (options.ssr) {
-                token = JSON.stringify(tokenify(code));
-            }
-
-            return `
-                export const token = ${token};
-                export default ${JSON.stringify(code)};
-            `;
+            return `export default ${JSON.stringify(code)};`;
         }
     } as Plugin);

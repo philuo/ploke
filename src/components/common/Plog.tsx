@@ -9,7 +9,7 @@ import {
     PropType,
     onMounted,
     onUnmounted,
-    onUpdated,
+    onUpdated
 } from 'vue';
 import {
     TOKEN_TAG,
@@ -179,8 +179,9 @@ const refParser = (token: PlogToken) => {
     );
 };
 const imgParser = (token: PlogToken) => {
+    console.log(token);
     return (
-        <p class="plog-imgblock">
+        <p class="plog-imgblock" key={token.val}>
             <img data-src={token.val} class="plog-img" />
         </p>
     );
@@ -243,6 +244,7 @@ const parser = {
 };
 
 const render = (tokenList: string | PlogToken[]) => {
+    console.log(tokenify(tokenList))
     return tokenify(tokenList).map((token) => parser[token.tag](token));
 };
 
