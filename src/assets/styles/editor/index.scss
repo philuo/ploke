@@ -10,7 +10,7 @@
     .editor,
     .preview {
         flex: 1;
-        overflow: scroll;
+        overflow: auto;
         word-break: break-all;
     }
 

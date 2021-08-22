@@ -13,7 +13,7 @@ export default defineConfig({
             '@icons': resolve(__dirname, 'src/assets/icons'),
         }
     },
-    plugins: [vue(), vueJsx(), poke({ ssr: true })],
+    plugins: [vue(), vueJsx(), poke],
     optimizeDeps: {
         exclude: ['vue', 'monaco-editor']
     },

@@ -8,9 +8,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-// @ts-ignore
 import editorPreview from './EditorPreview.vue';
-// @ts-ignore
 import editorWriter from './EditorWriter.vue';
 import markdownText from '~/README.md';
 

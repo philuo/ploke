@@ -93,7 +93,7 @@ const textRegMap = {
     [TEXT_TAG.BOLDITALIC as number]: /\*{3}([^\*]+)\*{3}/g,
     [TEXT_TAG.BOLD as number]: /\*{2}([^\*]+)\*{2}/g,
     [TEXT_TAG.ITALIC as number]: /\*([^\*]+)\*/g,
-    [TEXT_TAG.UNDERLINE as number]: /@([^@]+)@/g,
+    [TEXT_TAG.UNDERLINE as number]: /@{2}([^@]+)@{2}/g,
     [TEXT_TAG.DELETELINE as number]: /~{2}([^~]+)~{2}/g,
     [TEXT_TAG.BG as number]: /@\[([\s\S]+)\]\(([^\(\)]+)\)/g,
     [TEXT_TAG.COLOR as number]: /%\[([\s\S]+)\]\(([^\(\)]+)\)/g,

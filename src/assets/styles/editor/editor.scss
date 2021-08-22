@@ -2,11 +2,9 @@
 
     .editor {
         border-left: 1.4px solid #eee;
-        resize: none;
 
         &:focus {
             outline: none;
-            // border-left: 1.4px solid rgb(15, 184, 15);
         }
     }
 }

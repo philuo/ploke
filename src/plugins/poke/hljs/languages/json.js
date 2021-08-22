@@ -32,6 +32,7 @@ function json(hljs) {
 
   return {
     name: 'JSON',
+    aliases: ['jsonc'],
     contains: [
       ATTRIBUTE,
       PUNCTUATION,

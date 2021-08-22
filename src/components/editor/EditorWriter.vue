@@ -16,6 +16,33 @@ const props = defineProps({
     value: {
         type: String,
         default: ''
+    },
+    minimap: {
+        type: Boolean,
+        default: false
+    },
+    fontSize: {
+        type: Number,
+        default: 14
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
+    },
+    lineNumbers: {
+        type: Boolean,
+        default: true
+    },
+    language: {
+        type: String,
+        default: 'markdown'
+    },
+    scrollbar: {
+        type: Object,
+        default: {
+            horizontal: false,
+            vertical: false
+        }
     }
 });
 const emitter = defineEmits(['change']);
@@ -24,24 +51,26 @@ let monaco: editor.IStandaloneCodeEditor;
 onMounted(() => {
     monaco = editor.create((monacoRef.value as HTMLElement), {
         value: props.value,
-        language: 'markdown',
-        readOnly: false,
-        lineNumbers: 'on',
+        language: props.language,
+        readOnly: props.readOnly,
+        lineNumbers: props.lineNumbers ? 'on' : 'off',
         multiCursorPaste: 'full',
         scrollbar: {
-            horizontalScrollbarSize: 0,
-            horizontalSliderSize: 0,
-            verticalScrollbarSize: 0,
-            verticalSliderSize: 0,
+            horizontalScrollbarSize: props.scrollbar.horizontal ? 10 :0,
+            horizontalSliderSize: props.scrollbar.horizontal ? 10 : 0,
+            verticalScrollbarSize: props.scrollbar.vertical ? 10 :0,
+            verticalSliderSize: props.scrollbar.vertical ? 10 :0
         },
         minimap: {
-            enabled: false,
+            enabled: props.minimap,
         },
-        fontSize: 14,
+        fontSize: props.fontSize,
         lineDecorationsWidth: 0,
         renderLineHighlight: 'line',
         lineHeight: 1.5,
         folding: true,
+        automaticLayout: true,
+
     });
     monaco.onDidChangeModelContent(() => {
         task.set('changeMonacoContent', () => emitter('change', monaco.getValue()));
@@ -54,23 +83,29 @@ onUnmounted(() => {
 
 <style lang="scss">
 .monaco {
-    .monaco {
-        width: 90%;
-        height: 300px;
-        margin: 20px auto;
-        padding: 10px 0;
-        box-sizing: border-box;
-        border-radius: 12px;
-        box-shadow: 0 0 8px #eee;
-        overflow: hidden;
+    padding: .15rem 0;
+    box-sizing: border-box;
 
-        .view-line {
-            width: calc(100% - 16px);
+    .view-line {
+        width: calc(100% - 16px);
+    }
+
+    .monaco-editor {
+
+        .scroll-decoration {
+            box-shadow: none;
         }
 
-        .monaco-editor {
-            .scroll-decoration {
-                box-shadow: none;
+        .margin-view-overlays {
+            user-select: none;
+        }
+
+        .find-widget {
+            box-shadow: 0 0 .12rem #eee;
+            border-radius: .04rem;
+
+            .monaco-sash {
+                display: none;
             }
         }
     }
