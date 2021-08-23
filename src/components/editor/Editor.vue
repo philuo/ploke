@@ -1,7 +1,7 @@
 <template>
     <div class="editor-container">
-        <editor-preview :value="markdown" hotmode />
-        <editor-writer :value="markdown" @change="handleChange" />
+        <EditorPreview :value="markdown" hotmode />
+        <EditorWriter :value="markdown" @change="handleChange" />
     </div>
 </template>
 

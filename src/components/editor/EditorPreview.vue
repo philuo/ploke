@@ -1,10 +1,12 @@
 <template>
     <div class="preview">
-        <plog :class="$style.container" :token="value" :hotmode="hotmode" />
+        <Plog :class="$style.container" :token="value" :hotmode="hotmode" />
     </div>
 </template>
 
 <script lang="ts" setup>
+import Plog from '@/components/common/Plog';
+
 defineProps({
     hotmode: {
         type: Boolean,

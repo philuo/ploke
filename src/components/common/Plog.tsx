@@ -243,7 +243,7 @@ const render = (tokenList: string | PlogToken[]) => {
 };
 
 export default defineComponent({
-    name: 'plog',
+    name: 'Plog',
     components: {
         'plog-image': Image
     },
