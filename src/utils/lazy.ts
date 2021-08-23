@@ -1,13 +1,13 @@
-export const toggleIntoView = (
-    inCb?: (el: any) => void,
-    outCb?: (el: any) => void
+export const toggleIntoView = <T>(
+    inCb?: (el: T) => void,
+    outCb?: (el: T) => void
 ) => {
     return new IntersectionObserver((entries) => {
         entries.forEach(async (item) => {
             if (item.isIntersecting) {
-                inCb && (await inCb(item.target));
+                inCb && (await inCb(item.target as T & Element));
             } else {
-                outCb && (await outCb(item.target));
+                outCb && (await outCb(item.target as T & Element));
             }
         });
     });

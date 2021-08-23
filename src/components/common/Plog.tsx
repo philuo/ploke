@@ -4,21 +4,16 @@
  * @author Perfumere<1061393710@qq.com>
  * @date 2021-08-11
  */
-import {
-    defineComponent,
-    PropType,
-    onMounted,
-    onUnmounted,
-    onUpdated
-} from 'vue';
+import { reactive, defineComponent, PropType, onMounted, onUpdated } from 'vue';
 import {
     TOKEN_TAG,
     PlogToken,
     parser_t,
     hljs,
-    tokenify,
+    tokenify
 } from '@/plugins/poke/plog';
 import { lazyImageObserver } from '@/utils/lazy';
+import Image from './Image';
 
 const textParser = (token: PlogToken) => {
     if (!token) {
@@ -35,7 +30,7 @@ const codeblockParser = (token: PlogToken) => {
                 <code
                     innerHTML={
                         hljs.highlight(token.val, {
-                            language: token.lang as string,
+                            language: token.lang as string
                         }).value
                     }
                 />
@@ -181,6 +176,7 @@ const refParser = (token: PlogToken) => {
 const imgParser = (token: PlogToken) => {
     return (
         <p class="plog-imgblock" key={token.val}>
+            <plog-image src={token.val} />
             <img data-src={token.val} class="plog-img" />
         </p>
     );
@@ -213,7 +209,7 @@ const checkboxParser = (token: PlogToken) => {
                     'checkbox',
                     !['x', 'X'].includes(token.lang as string)
                         ? 'no-checked'
-                        : '',
+                        : ''
                 ]}
             >
                 <div class="icon">
@@ -239,7 +235,7 @@ const parser = {
     [TOKEN_TAG.IMG as number]: imgParser,
     [TOKEN_TAG.OL as number]: olParser,
     [TOKEN_TAG.UL as number]: ulParser,
-    [TOKEN_TAG.CHECKBOX as number]: checkboxParser,
+    [TOKEN_TAG.CHECKBOX as number]: checkboxParser
 };
 
 const render = (tokenList: string | PlogToken[]) => {
@@ -248,15 +244,18 @@ const render = (tokenList: string | PlogToken[]) => {
 
 export default defineComponent({
     name: 'plog',
+    components: {
+        'plog-image': Image
+    },
     props: {
         token: {
             type: [String, Array] as PropType<string | PlogToken[]>,
-            default: [],
+            default: []
         },
         hotmode: {
             type: Boolean,
-            default: false,
-        },
+            default: false
+        }
     } as const,
     setup(props) {
         onMounted(() => {
@@ -264,18 +263,18 @@ export default defineComponent({
                 (item) => lazyImageObserver.observe(item)
             );
         });
-        onUnmounted(() => {
-            lazyImageObserver.disconnect();
-        });
-        onUpdated(() => {
-            if (props.hotmode) {
+
+        // 热加载
+        if (props.hotmode) {
+            onUpdated(() => {
                 Array.from(
                     document.querySelectorAll('.plog-article img')
                 ).forEach((item) => lazyImageObserver.observe(item));
-            }
-        });
+            });
+        }
+
         return () => (
             <article class="plog-article">{render(props.token)}</article>
         );
-    },
+    }
 });
