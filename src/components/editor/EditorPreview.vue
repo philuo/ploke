@@ -1,11 +1,11 @@
 <template>
     <div class="preview">
-        <Plog :class="$style.container" :token="value" :hotmode="hotmode" />
+        <plog :class="$style.container" :token="value" :hotmode="hotmode" />
     </div>
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
+defineProps({
     hotmode: {
         type: Boolean,
         default: false

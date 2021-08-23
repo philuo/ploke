@@ -179,7 +179,6 @@ const refParser = (token: PlogToken) => {
     );
 };
 const imgParser = (token: PlogToken) => {
-    console.log(token);
     return (
         <p class="plog-imgblock" key={token.val}>
             <img data-src={token.val} class="plog-img" />
@@ -244,12 +243,11 @@ const parser = {
 };
 
 const render = (tokenList: string | PlogToken[]) => {
-    console.log(tokenify(tokenList))
     return tokenify(tokenList).map((token) => parser[token.tag](token));
 };
 
 export default defineComponent({
-    name: 'Plog',
+    name: 'plog',
     props: {
         token: {
             type: [String, Array] as PropType<string | PlogToken[]>,

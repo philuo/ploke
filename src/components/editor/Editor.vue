@@ -7,12 +7,17 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import EditorPreview from './EditorPreview.vue';
+import EditorWriter from './EditorWriter.vue';
 
-import editorPreview from './EditorPreview.vue';
-import editorWriter from './EditorWriter.vue';
-import markdownText from '~/README.md';
+const props = defineProps({
+    value: {
+        type: String,
+        default: ''
+    }
+});
 
-const markdown = ref<string>(markdownText);
+const markdown = ref<string>(props.value);
 const handleChange = (value: string) => {
     markdown.value = value;
 };
