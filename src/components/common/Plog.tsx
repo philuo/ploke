@@ -4,7 +4,7 @@
  * @author Perfumere<1061393710@qq.com>
  * @date 2021-08-11
  */
-import { reactive, defineComponent, PropType, onMounted, onUpdated } from 'vue';
+import { defineComponent, PropType, onMounted, onUpdated } from 'vue';
 import {
     TOKEN_TAG,
     PlogToken,
@@ -13,7 +13,7 @@ import {
     tokenify
 } from '@/plugins/poke/plog';
 import { lazyImageObserver } from '@/utils/lazy';
-import Image from './Image';
+import Image from './Image.vue';
 
 const textParser = (token: PlogToken) => {
     if (!token) {
@@ -176,7 +176,7 @@ const refParser = (token: PlogToken) => {
 const imgParser = (token: PlogToken) => {
     return (
         <p class="plog-imgblock" key={token.val}>
-            <plog-image src={token.val} />
+            <plog-image src={token.val} alt={token.lang} />
             <img data-src={token.val} class="plog-img" />
         </p>
     );
@@ -243,7 +243,7 @@ const render = (tokenList: string | PlogToken[]) => {
 };
 
 export default defineComponent({
-    name: 'Plog',
+    name: 'plog',
     components: {
         'plog-image': Image
     },

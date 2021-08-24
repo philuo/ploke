@@ -13,18 +13,12 @@ export const toggleIntoView = <T>(
     });
 };
 
-export const lazyImageObserver = (() => new IntersectionObserver((entries) => {
-    entries.forEach(async (item) => {
-        const element = item.target as HTMLImageElement;
-        if (item.isIntersecting) {
-            if (element.src) {
-                lazyImageObserver.unobserve(element);
-                return;
-            }
-
-            if (element.dataset.src) {
+export const lazyImageObserver = (() =>
+    new IntersectionObserver((entries) => {
+        entries.forEach(async (item) => {
+            const element = item.target as HTMLImageElement;
+            if (item.isIntersecting && element.dataset.src) {
                 element.src = element.dataset.src;
             }
-        }
-    });
-}))();
+        });
+    }))();
