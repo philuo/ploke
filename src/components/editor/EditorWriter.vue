@@ -113,6 +113,7 @@ const handleDrop = async (event: DragEvent) => {
         changeEditor(fileProperval);
     }
 };
+
 const changeEditor = (insertStr: string) => {
     if (monaco) {
         const selections = monaco.getSelections() as Selection[];
