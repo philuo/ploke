@@ -3,8 +3,11 @@
         v-if="!lazy && noError"
         :src="src || defaultSrc"
         :alt="alt"
-        class="plog-image"
         :draggable="draggable"
+        :style="{
+            objectFit
+        }"
+        class="plog-image"
         @error="handleError"
         @load="handleLoad"
     />
@@ -13,11 +16,11 @@
         v-else-if="noError"
         :data-src="src"
         :alt="alt"
-        class="plog-image"
         :draggable="draggable"
         :style="{
-            objectFit: objectFit
+            objectFit
         }"
+        class="plog-image"
         @error="handleError"
         @load="handleLoad"
     />

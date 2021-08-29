@@ -13,7 +13,6 @@ import {
     tokenify
 } from '@/plugins/poke/plog';
 import PlogImage from './Image.vue';
-import LoadError from './LoadError.vue';
 
 const textParser = (token: PlogToken) => {
     if (!token) {
