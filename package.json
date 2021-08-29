@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "markdown-it": "^12.2.0",
+        "monaco-editor": "^0.27.0",
         "vue": "^3.2.1"
     },
     "devDependencies": {
@@ -17,7 +18,7 @@
         "@vitejs/plugin-vue-jsx": "^1.1.7",
         "@vue/compiler-sfc": "^3.0.5",
         "benchmark": "^2.1.4",
-        "monaco-editor": "^0.27.0",
+        "qiniu-js": "^3.3.3",
         "sass": "^1.37.2",
         "typescript": "^4.3.2",
         "vite": "^2.4.4",

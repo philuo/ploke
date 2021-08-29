@@ -2,14 +2,13 @@
 @import './preview.scss';
 
 .editor-container {
-    height: 100%;
     margin: 0 -0.1rem;
     display: flex;
-    overflow: hidden;
 
     .editor,
     .preview {
         flex: 1;
+        height: 100vh;
         overflow: auto;
         word-break: break-all;
     }
@@ -38,12 +37,12 @@
 
 @media screen and (max-width: 540px) {
     .editor-container {
-        height: 100%;
         margin: 0 -0.1rem;
         display: block;
 
         .editor,
         .preview {
+            overflow: auto;
             width: 100%;
             height: 50%;
         }

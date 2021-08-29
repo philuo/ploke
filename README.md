@@ -53,7 +53,6 @@ computed(() => {
         t.value = token;
     }
 })
-console.log(token)
 ```
 ```
 
@@ -66,7 +65,6 @@ computed(() => {
         t.value = token;
     }
 })
-console.log(token)
 ```
 ## 表格块
 

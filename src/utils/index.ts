@@ -1,4 +1,6 @@
 export * from './keyboard';
+export { md5 } from './md5';
+export { compressImg } from './compress';
 
 const HTML_ESCAPE_TEST_RE = /[&<>"]/;
 const HTML_ESCAPE_REPLACE_RE = /[&<>"]/g;
@@ -19,7 +21,7 @@ export const escapeHtml = (str: string): string => {
         );
     }
     return str;
-}
+};
 
 class TaskQueue extends Array {
     private action: string;
@@ -30,7 +32,7 @@ class TaskQueue extends Array {
         super();
         TaskQueue.actions[action] = {
             status: false,
-            ret: 0,
+            ret: 0
         };
         this.action = action;
     }
@@ -123,11 +125,43 @@ export class AutoTaskQueue {
     }
 }
 
+/// request
+export const Request = {
+    get(url: string) {
+        if (!fetch) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = () => {
+                    if (
+                        xhr.readyState === 4 &&
+                        ((xhr.status >= 200 && xhr.status < 300) ||
+                            xhr.status === 304)
+                    ) {
+                        resolve(xhr.response);
+                    }
+                    if (xhr.status >= 400) {
+                        reject(new Error('Request Error.'));
+                    }
+                };
+                xhr.responseType = 'json';
+                xhr.open('GET', url);
+                xhr.send(null);
+            });
+        }
+        return fetch(url).then(resp => {
+            if (resp.status >= 400) {
+                throw Error('Request Error.')
+            }
+            return resp.json();
+        });
+    }
+};
+
 /// on once remove
 enum ExecStatus {
     One,
     Every,
-    Done,
+    Done
 }
 
 export interface EventMaping {
@@ -148,16 +182,18 @@ const events: EventMaping = {};
 export class EventBus {
     static on(e: string, cb: Function) {
         e && !events[e] && (events[e] = []);
-        events[e] && typeof cb === 'function'
-            && !~events[e].findIndex((p) => p.cb === cb)
-            && events[e].push({ cb, status: ExecStatus.Every });
+        events[e] &&
+            typeof cb === 'function' &&
+            !~events[e].findIndex((p) => p.cb === cb) &&
+            events[e].push({ cb, status: ExecStatus.Every });
     }
 
     static once(e: string, cb: Function) {
         e && !events[e] && (events[e] = []);
-        events[e] && typeof cb === 'function'
-        && !~events[e].findIndex((p) => p.cb === cb)
-        && events[e].push({ cb, status: ExecStatus.One });
+        events[e] &&
+            typeof cb === 'function' &&
+            !~events[e].findIndex((p) => p.cb === cb) &&
+            events[e].push({ cb, status: ExecStatus.One });
     }
 
     static remove(e: string, cb: Function) {
@@ -193,6 +229,6 @@ export const isPhone = (ua: string): boolean => {
     return /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i.test(
         ua
     );
-}
+};
 
 export const taskQueue = () => new AutoTaskQueue();

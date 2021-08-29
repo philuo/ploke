@@ -4,9 +4,9 @@
         :src="src || defaultSrc"
         :alt="alt"
         class="plog-image"
+        :draggable="draggable"
         @error="handleError"
         @load="handleLoad"
-        @dragstart="handleDragStart"
     />
     <img
         ref="img"
@@ -14,18 +14,18 @@
         :data-src="src"
         :alt="alt"
         class="plog-image"
+        :draggable="draggable"
         :style="{
             objectFit: objectFit
         }"
         @error="handleError"
         @load="handleLoad"
-        @dragstart="handleDragStart"
     />
     <LoadError v-else />
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted, PropType } from 'vue';
+import { ref, watch, onMounted, onUnmounted, PropType } from 'vue';
 import LoadError from '@/components/common/LoadError.vue';
 import { lazyImageObserver } from '@/utils/lazy';
 
@@ -41,7 +41,7 @@ const props = defineProps({
         type: String,
         default: ''
     },
-    dragable: {
+    draggable: {
         type: Boolean,
         default: false
     },
@@ -65,39 +65,26 @@ const handleError = (event: Event) => {
 const handleLoad = (event: Event) => {
     emitter('load', event);
 };
-const handleDragStart = (event: Event) => {
-    if (!props.dragable) {
-        event.preventDefault();
-    }
-    emitter('error', event);
-};
 
 // data
 const img = ref<Element | null>(null);
 const noError = ref<boolean>(true);
-let observer: IntersectionObserver;
 
 // hooks
 watch(
     () => props.src,
-    () => {
-        if (img.value && props.lazy) {
-            const rect = img.value.getBoundingClientRect();
-            if (
-                (rect.top >= 0 || rect.bottom >= 0) &&
-                rect.top < window.screen.availHeight
-            ) {
-                (img.value as HTMLImageElement).src = props.src;
-            }
-        }
-        noError.value = true;
-    }
+    () => (noError.value = true)
 );
 
 // life cycle
 onMounted(() => {
     if (img.value && props.lazy) {
         lazyImageObserver.observe(img.value);
+    }
+});
+onUnmounted(() => {
+    if (img.value && props.lazy) {
+        lazyImageObserver.unobserve(img.value);
     }
 });
 </script>

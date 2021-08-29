@@ -1,12 +1,17 @@
 <template>
-    <div class="preview">
-        <Plog :class="$style.container" :token="value" :hotmode="hotmode" />
+    <div class="preview" @drop="handleDrag">
+        <Plog :class="$style.container" :token="value" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import Plog from '@/components/common/Plog';
 
+function handleDrag(event: DragEvent) {
+    event.stopPropagation();
+    event.preventDefault();
+    return false;
+}
 defineProps({
     hotmode: {
         type: Boolean,
@@ -29,7 +34,6 @@ defineProps({
 
 @media screen and (min-width: 540px) {
     .container {
-        margin-top: 0.4rem;
         padding: 0.1rem 0.3rem 0.2rem;
     }
 }

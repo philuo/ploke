@@ -4,7 +4,7 @@
  * @author Perfumere<1061393710@qq.com>
  * @date 2021-08-11
  */
-import { defineComponent, PropType, onMounted, onUpdated } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import {
     TOKEN_TAG,
     PlogToken,
@@ -12,8 +12,8 @@ import {
     hljs,
     tokenify
 } from '@/plugins/poke/plog';
-import { lazyImageObserver } from '@/utils/lazy';
-import Image from './Image.vue';
+import PlogImage from './Image.vue';
+import LoadError from './LoadError.vue';
 
 const textParser = (token: PlogToken) => {
     if (!token) {
@@ -174,10 +174,12 @@ const refParser = (token: PlogToken) => {
     );
 };
 const imgParser = (token: PlogToken) => {
+    if (token.val && !token.val.startsWith('http') && token.val.length === 32) {
+        token.val = 'http://cdn.plog.top/' + token.val;
+    }
     return (
         <p class="plog-imgblock" key={token.val}>
-            <plog-image src={token.val} alt={token.lang} />
-            <img data-src={token.val} class="plog-img" />
+            <PlogImage src={token.val} alt={token.lang} class="plog-img" />
         </p>
     );
 };
@@ -245,34 +247,15 @@ const render = (tokenList: string | PlogToken[]) => {
 export default defineComponent({
     name: 'plog',
     components: {
-        'plog-image': Image
+        PlogImage
     },
     props: {
         token: {
             type: [String, Array] as PropType<string | PlogToken[]>,
             default: []
-        },
-        hotmode: {
-            type: Boolean,
-            default: false
         }
     } as const,
     setup(props) {
-        onMounted(() => {
-            Array.from(document.querySelectorAll('.plog-article img')).forEach(
-                (item) => lazyImageObserver.observe(item)
-            );
-        });
-
-        // 热加载
-        if (props.hotmode) {
-            onUpdated(() => {
-                Array.from(
-                    document.querySelectorAll('.plog-article img')
-                ).forEach((item) => lazyImageObserver.observe(item));
-            });
-        }
-
         return () => (
             <article class="plog-article">{render(props.token)}</article>
         );

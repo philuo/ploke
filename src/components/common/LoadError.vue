@@ -2,7 +2,7 @@
     <transition>
         <div :class="$style['err-area']">
             <img :src="iconMap[type]" @dragstart.prevent />
-            {{ text || txtMap[type] }}
+            <div :class="$style['desc']">{{ text || txtMap[type] }}</div>
         </div>
     </transition>
 </template>
@@ -10,6 +10,8 @@
 <script lang="ts" setup>
 import errImage from '@/assets/icons/error-image.svg';
 import errFile from '@/assets/icons/error-file.svg';
+import errDoc from '@/assets/icons/error-doc.svg';
+import errMedia from '@/assets/icons/error-media.svg';
 
 defineProps({
     /**
@@ -31,10 +33,15 @@ defineProps({
 
 const iconMap: strKeyObject = {
     image: errImage,
-    file: errFile
+    file: errFile,
+    doc: errDoc,
+    media: errMedia
 };
 const txtMap: strKeyObject = {
-    image: '图片失效'
+    image: '图片失效',
+    file: '文件失效',
+    doc: '文档失效',
+    media: '资源失效',
 };
 </script>
 
@@ -46,6 +53,10 @@ const txtMap: strKeyObject = {
     justify-content: center;
     text-align: center;
     color: #97a0af;
+
+    .desc {
+        margin-bottom: .1rem;
+    }
 
     img {
         flex-shrink: 0;

@@ -120,10 +120,14 @@ export const parser_t = (text: string, safe = false): string => {
             textRegMap[TEXT_TAG.COLOR],
             '<span style="color:$2;text-decoration-color:$2">$1</span>'
         )
-        .replace(textRegMap[TEXT_TAG.LINK], (_, alias, src) => {
+        .replace(textRegMap[TEXT_TAG.LINK], (_, alias: string, src: string) => {
             let name = alias.trim();
             let href = src.trim();
-            return `<a href="${href}" target="_blank">${name || href}</a>`;
+            let rlHref = href;
+            if (!rlHref.startsWith('http') && !rlHref.startsWith('/')) {
+                rlHref = 'https://' + rlHref;
+            }
+            return `<a href="${rlHref}" target="_blank">${name || href}</a>`;
         })
         .replace(
             textRegMap[TEXT_TAG.INLINEREF],
