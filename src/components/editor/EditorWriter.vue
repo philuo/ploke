@@ -100,7 +100,7 @@ const handleDrop = async (event: DragEvent) => {
     const fileStr = await file.text();
     const fileProperval = md5(fileStr.substr(0, 1024) + fileStr.substr(-1024));
     if (!localStorage.getItem(fileProperval)) {
-        const { token } = await Request.get('http://localhost:8080/getToken');
+        const { token } = await Request.get('http://172.24.244.174:8080/getToken');
         const imageBolb = await compressImg(file, { q: 0.75 });
         const observable = qiniu.upload(imageBolb, fileProperval, token);
         observable.subscribe({
@@ -155,7 +155,7 @@ const handlePaste = async (event: ClipboardEvent) => {
             );
             if (!localStorage.getItem(fileProperval)) {
                 const { token } = await Request.get(
-                    'http://localhost:8080/getToken'
+                    'http://172.24.244.174:8080/getToken'
                 );
                 const imageBolb = await compressImg(file, { q: 0.75 });
                 const observable = qiniu.upload(

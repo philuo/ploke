@@ -174,11 +174,11 @@ const refParser = (token: PlogToken) => {
 };
 const imgParser = (token: PlogToken) => {
     if (token.val && !token.val.startsWith('http') && token.val.length === 32) {
-        token.val = 'http://cdn.plog.top/' + token.val;
+        token.val = 'https://cdn.plog.top/' + token.val;
     }
     return (
         <p class="plog-imgblock" key={token.val}>
-            <PlogImage src={token.val} alt={token.lang} class="plog-img" />
+            <PlogImage src={token.val} alt={token.lang} class="plog-img" object-fit="fill"/>
         </p>
     );
 };
