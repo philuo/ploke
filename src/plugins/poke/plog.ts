@@ -100,7 +100,7 @@ const textRegMap = {
     [TEXT_TAG.LINK as number]: /\[([^\[\]]*)\]\(([^\(\)]+)\)/g,
 };
 
-export const parser_t = (text: string, safe = false): string => {
+export const parser_t = (text: string, safe = true): string => {
     const inlineref: string[] = [];
     return (safe ? escapeHtml(text) : text)
         .replace(textRegMap[TEXT_TAG.INLINEREF], (substr, match) => {
@@ -160,7 +160,7 @@ const tokenRegMap = {
  * 标记plog内容
  * mark the content of plog.
  */
-export const tokenify = (content: string | PlogToken[], safe = false): PlogToken[] => {
+export const tokenify = (content: string | PlogToken[], safe = true): PlogToken[] => {
     if (!content) return [];
     if (Array.isArray(content)) {
         return content;

@@ -240,6 +240,7 @@ const parser = {
 };
 
 const render = (tokenList: string | PlogToken[]) => {
+    console.log(tokenify(tokenList))
     return tokenify(tokenList).map((token) => parser[token.tag](token));
 };
 
